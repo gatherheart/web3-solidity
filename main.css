@@ -1,0 +1,31 @@
+body {
+    padding: 2em;
+    background-color: #05ffb0;
+    font-family: 'Raleway','Source Sans Pro', 'Arial';
+}
+.container {
+    width: 50%;
+    margin: 0 auto;
+}
+label {
+    display:block;
+    margin-bottom:10px;
+}
+input {
+    padding:10px;
+    width: 50%;
+    margin-bottom: 1em;
+}
+button {
+    margin: 1em 0;
+    margin-right: 2em;
+    padding: 1em 4em;
+    display:block;
+    float: left;
+}
+
+#ENS {
+    padding:1em;
+    background-color:#000;
+    margin: 1em 0;
+}
