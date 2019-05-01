@@ -1,10 +1,18 @@
 function main(){
 
-    window.addEventListener("load", function() {
+   
+    window.addEventListener("load", function(err, res) {
         if (typeof web3 !== "undefined") {
             // Use MetaMask
+            try{
+                ethereum.enable();
+            }
+            catch(error){
+                console.log("User denied access");
+            }
             window.web3 = new Web3(web3.currentProvider);
-	        console.log("Using MetaMask");
+            
+            console.log("Using MetaMask");
         } 
         else {
             console.log("Not Using MetaMask");
@@ -13,10 +21,10 @@ function main(){
         );
       }        
     });
-    
+   
     document.addEventListener("DOMContentLoaded", function () {
         
-        const contractEns = web3.eth.contract(abi).at('0xf1c367ea81af2ff3747ee598fc9c486143c6768a');
+        const contractEns = web3.eth.contract(abi).at('0x9e94af3a37926c5c29e56e356f30824ab2413370');
         console.log("ENS");
          
         $('#btn-submit').bind('click', function () {
@@ -47,7 +55,7 @@ function main(){
             console.log("cliked");
             var nameLen = $('#name').val().length;
             var addrLen = $('#address').val().length;
-
+            
             // Nothing 
             if(nameLen == 0 && addrLen == 0){
                 alert("Please type address or domain name");
@@ -58,22 +66,16 @@ function main(){
                 // filter input string
                 var splited = $('#name').val().split('.');    
                 var setting = {from: web3.eth.accounts[0], value: web3.toWei(0.01, "ether")};
-
+                console.log("name query start");
                 if( splited.length != 3 || splited[1] != "ubuntu" || splited[2] != "eth"){
                     alert("FORMAT: (name).ubuntu.eth ");
                     return;
                 }
-                contractEns.queryWithName($('#name').val(), setting, 
-                    function(err, res){
-                        if(err){
-                            alert("Error occured");
-                        }else{
-                            console.log(res);
-                            $('#queryAddr').attr('href',
-                                        'https://ropsten.etherscan.io/address/' + res).text(res);
-                        }
-                    }
-                );        
+                contractEns.queryWithName.call($('#name').val(), setting, 
+                    function (err, res){
+                        console.log(res);
+                        document.getElementById("queryName").innerHTML = '<p>https://ropstem.etherscan.io+'+res+'</p>';
+                    }).then(console.log);
             }
             // address query
             else if(nameLen == 0 && addrLen != 0){
@@ -90,7 +92,7 @@ function main(){
     );
 } 
 
-abi =[
+abi = [
 	{
 		"constant": false,
 		"inputs": [
