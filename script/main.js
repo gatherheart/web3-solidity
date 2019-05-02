@@ -24,11 +24,9 @@ function main(){
    
     document.addEventListener("DOMContentLoaded", function () {
         
-        const contractEns = web3.eth.contract(abi).at('0x647ea80f3548a22f9e70178e75beb488eede7984');
-        console.log("ENS");
+        const contractEns = web3.eth.contract(abi).at('0xa37bc1a820b1973e1de9da26487031999a9d96ab');
          
         $('#btn-submit').bind('click', function () {
-            console.log("cliked");
        
             var setting = {from: web3.eth.accounts[0], value: web3.toWei(0.1, "ether")};
             // filter input string
@@ -38,7 +36,6 @@ function main(){
                 alert("FORMAT: (name).ubuntu.eth ");
                 return;
             }
-            console.log("Register");
             contractEns.register($('#name').val(), $('#address').val(), setting, 
                 function(err, res){
                     
@@ -50,9 +47,47 @@ function main(){
             );
         });
         
+        // change the name of ETH address
+        $('#btn-change1').bind('click', function () {
+       
+            var setting = {from: web3.eth.accounts[0], value: web3.toWei(0.1, "ether")};
+            // filter input string
+            var splited = $('#name').val().split('.');
+            
+            if( splited.length != 3 || splited[1] != "ubuntu" || splited[2] != "eth"){
+                alert("FORMAT: (name).ubuntu.eth ");
+                return;
+            }
+            contractEns.changeDomain($('#address').val(), $('#name').val(), setting, 
+                function(err, res){
+                    
+                    document.getElementById("Result").innerHTML = 
+                        '<a target="_blank" rel="noopener noreferrer" href='
+                        +"https://ropsten.etherscan.io/tx/"+res+'>'+res+'</a>';
+
+                }
+            );
+        });
+
+        //change ownershop of nameholder 
+        $('#btn-change2').bind('click', function () {
+       
+            var setting = {from: web3.eth.accounts[0], value: web3.toWei(0.1, "ether")};
+            // filter input string
+            
+            contractEns.changeOwner($('#address1').val(), $('#address2').val(), setting, 
+                function(err, res){
+                    
+                    document.getElementById("Result").innerHTML = 
+                        '<a target="_blank" rel="noopener noreferrer" href='
+                        +"https://ropsten.etherscan.io/tx/"+res+'>'+res+'</a>';
+
+                }
+            );
+        });
+       
         $('#btn-query').bind('click', function () {
             
-            console.log("cliked");
             var nameLen = $('#name').val().length;
             var addrLen = $('#address').val().length;
             
@@ -66,28 +101,42 @@ function main(){
                 // filter input string
                 var splited = $('#name').val().split('.');    
                 var setting = {value: web3.toWei(0.01, "ether")};
-                console.log("name query start");
+                
                 if( splited.length != 3 || splited[1] != "ubuntu" || splited[2] != "eth"){
                     alert("FORMAT: (name).ubuntu.eth ");
                     return;
                 }
                 contractEns.queryWithName($('#name').val(), setting, 
                     function (err, res){
-                
-                    console.log(res);
-                    document.getElementById("queryName").innerHTML = 
-                        '<a target="_blank" rel="noopener noreferrer" href='
-                        +"https://ropsten.etherscan.io/tx/"+res+'>'+res+'</a>';
+                   
+                        document.getElementById("queryName").innerHTML = 
+                            '<p class="mt-4">'+" "+'</p>';                
+               
+
+                        document.getElementById("Result").innerHTML = 
+                            '<a target="_blank" rel="noopener noreferrer" href='
+                            +"https://ropsten.etherscan.io/tx/"+res+'>'+res+'</a>';
                         
-                    var value = contractEns.queryWithName.call($('#name').val(),
-                        function(error, result){
-                            console.log(value);
-                        });
                 });
             }
             // address query
             else if(nameLen == 0 && addrLen != 0){
-                return;
+                var setting = {value: web3.toWei(0.01, "ether")};
+               
+                contractEns.queryWithAddr($('#address').val(), setting, 
+                    function (err, res){
+                        
+                        document.getElementById("queryName").innerHTML = 
+                            '<p class="mt-4">'+" "+'</p>';                
+               
+
+                        document.getElementById("Result").innerHTML = 
+                            '<a target="_blank" rel="noopener noreferrer" href='
+                            +"https://ropsten.etherscan.io/tx/"+res+'>'+res+'</a>';
+                    
+
+                });
+                
             }
             else{
                 alert("Wrong Usage: please type only one section");
@@ -101,10 +150,14 @@ function main(){
             
             contractEns.query(function(err, res){
                     
-                    console.log(res);
-                    document.getElementById("queryResult").innerHTML = 
+                console.log(res);
+                
+                document.getElementById("queryName").innerHTML = 
+                        '<p class="mt-4">'+ res[1] + '</p>';                
+               
+                document.getElementById("Result").innerHTML = 
                         '<a target="_blank" rel="noopener noreferrer" href='
-                        +"https://ropsten.etherscan.io/address/"+res+'>'+res+'</a>';
+                        +"https://ropsten.etherscan.io/address/"+res[0]+'>'+res[0]+'</a>';
 
                     }
                 );
